@@ -6,6 +6,7 @@ import { uploadImage } from '@/services/storageService'
 import { generateSlug } from '@/utils/formatters'
 import { validateSlug, validateWhatsApp } from '@/utils/validators'
 import { copyText } from '@/utils/clipboard'
+import { getCatalogUrl } from '@/utils/urls'
 
 export default function SettingsPage() {
   const { store, refreshStore } = useAuth()
@@ -80,7 +81,7 @@ export default function SettingsPage() {
     }
   }
 
-  const catalogUrl = slug ? `${window.location.origin}/${slug}` : ''
+  const catalogUrl = slug ? getCatalogUrl(slug) : ''
 
   function handleCopyCatalogUrl() {
     copyText(catalogUrl)

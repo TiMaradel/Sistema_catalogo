@@ -5,6 +5,7 @@ const STORES_KEY = 'cat_stores'
 const CATEGORIES_KEY = 'cat_categories'
 const PRODUCTS_KEY = 'cat_products'
 const DEMO_SLUG = 'loja-teste'
+const demoAsset = (fileName) => `${import.meta.env.BASE_URL}demo-clothing/${fileName}`
 
 const DEMO_CATEGORIES = [
   { id: 'demo-category-essentials', name: 'Essenciais', order: 0 },
@@ -20,7 +21,7 @@ const DEMO_PRODUCTS = [
     price: 149.90,
     categoryId: 'demo-category-essentials',
     featured: true,
-    image: '/demo-clothing/linen-shirt.webp',
+    image: demoAsset('linen-shirt.webp'),
   },
   {
     id: 'demo-product-terracotta-tee',
@@ -29,7 +30,7 @@ const DEMO_PRODUCTS = [
     price: 79.90,
     categoryId: 'demo-category-essentials',
     featured: false,
-    image: '/demo-clothing/terracotta-tee.webp',
+    image: demoAsset('terracotta-tee.webp'),
   },
   {
     id: 'demo-product-denim-jacket',
@@ -38,7 +39,7 @@ const DEMO_PRODUCTS = [
     price: 229.90,
     categoryId: 'demo-category-outerwear',
     featured: true,
-    image: '/demo-clothing/denim-jacket.webp',
+    image: demoAsset('denim-jacket.webp'),
   },
   {
     id: 'demo-product-tailored-trousers',
@@ -47,7 +48,7 @@ const DEMO_PRODUCTS = [
     price: 189.90,
     categoryId: 'demo-category-tailoring',
     featured: false,
-    image: '/demo-clothing/tailored-trousers.webp',
+    image: demoAsset('tailored-trousers.webp'),
   },
 ]
 

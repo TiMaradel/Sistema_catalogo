@@ -6,6 +6,7 @@ import { getCategoriesByStore } from '@/services/categoryService'
 import { useToast } from '@/contexts/ToastContext'
 import { copyText } from '@/utils/clipboard'
 import { getPlan } from '@/utils/constants'
+import { getCatalogUrl } from '@/utils/urls'
 
 export default function DashboardPage() {
   const { store } = useAuth()
@@ -43,7 +44,7 @@ export default function DashboardPage() {
     loadStats()
   }, [store?.id])
 
-  const catalogUrl = store?.slug ? `${window.location.origin}/${store.slug}` : ''
+  const catalogUrl = store?.slug ? getCatalogUrl(store.slug) : ''
   const plan = getPlan(store?.plan)
 
   return (

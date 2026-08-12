@@ -1,6 +1,7 @@
 import { useAuth } from '@/contexts/AuthContext'
 import { logoutUser } from '@/services/authService'
 import { useNavigate } from 'react-router-dom'
+import { getCatalogPath } from '@/utils/urls'
 
 export default function Header({ onMenuToggle }) {
   const { userData, store } = useAuth()
@@ -32,7 +33,7 @@ export default function Header({ onMenuToggle }) {
       <div className="flex items-center gap-3">
         {store?.slug && (
           <a
-            href={`/${store.slug}`}
+            href={getCatalogPath(store.slug)}
             target="_blank"
             rel="noopener noreferrer"
             className="btn btn-outline btn-sm"

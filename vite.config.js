@@ -3,8 +3,10 @@ import react from '@vitejs/plugin-react'
 import path from 'node:path'
 
 const projectDirectory = import.meta.dirname
+const githubPagesBase = process.env.GITHUB_ACTIONS === 'true' ? '/Sistema_catalogo/' : '/'
 
 export default defineConfig({
+  base: githubPagesBase,
   plugins: [react()],
   resolve: {
     alias: {

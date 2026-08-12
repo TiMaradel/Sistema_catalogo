@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
+import { getCatalogPath } from '@/utils/urls'
 
 export default function Sidebar({ isOpen, onClose }) {
   const { store, isSuperAdmin } = useAuth()
@@ -66,7 +67,7 @@ export default function Sidebar({ isOpen, onClose }) {
         <div className="sidebar-footer">
           {store && (
             <a
-              href={`/${store.slug}`}
+              href={getCatalogPath(store.slug)}
               target="_blank"
               rel="noopener noreferrer"
               className="sidebar-link"

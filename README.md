@@ -15,7 +15,7 @@ Abra `http://localhost:3000`. O botão de teste cria uma conta e uma loja de exe
 
 ### Catálogo demonstrativo de moda
 
-Use o botão `Acessar sem login (Modo Teste)` para abrir o painel da loja **Ateliê Aurora**. O sistema prepara automaticamente quatro produtos de roupas, três categorias e imagens locais otimizadas para WebP. No painel, o link do catálogo fica disponível para abrir em uma nova aba.
+Use o botão `Ver catálogo de teste` para abrir diretamente a vitrine da loja **Ateliê Aurora** ou `Abrir painel de teste` para entrar no painel administrativo. O sistema prepara automaticamente quatro produtos de roupas, três categorias e imagens locais otimizadas para WebP. No painel, o link do catálogo fica disponível para abrir em uma nova aba.
 
 O endereço do exemplo é `http://localhost:3000/loja-teste` depois que o modo de teste for iniciado.
 
@@ -29,11 +29,21 @@ O projeto está funcionando sem Firebase. Os dados ficam no `localStorage`, que 
 - apagar os dados do site apaga a base local;
 - as imagens são convertidas para texto e também ficam no navegador.
 
-## Link público
+## Publicação no GitHub Pages
 
-Cada loja recebe uma rota como `http://localhost:3000/loja-teste`. Ela funciona no mesmo navegador depois que a loja foi criada e os produtos foram cadastrados. O catálogo busca a loja pelo slug (a parte amigável do endereço) e exibe apenas produtos ativos.
+O projeto possui um workflow em `.github/workflows/deploy-pages.yml`. Depois que ele for enviado para a branch `main`, o GitHub pode publicar a aplicação em:
 
-Para compartilhar com clientes em produção, ainda será necessário um banco de dados/servidor e uma hospedagem configurada para devolver `index.html` em rotas como `/loja-teste`. Essa etapa será feita quando o Firebase ou outra API for ativado.
+`https://timaradel.github.io/Sistema_catalogo/`
+
+No repositório, abra **Settings → Pages** e selecione **GitHub Actions** como fonte de publicação. A cada novo envio para `main`, o GitHub fará a build e atualizará o site automaticamente.
+
+O catálogo demonstrativo também pode ser acessado diretamente em:
+
+`https://timaradel.github.io/Sistema_catalogo/loja-teste`
+
+O endereço utiliza uma rota compatível com o GitHub Pages e as imagens usam o caminho correto do repositório.
+
+Esta publicação é adequada para demonstrar a interface. Como os dados ainda ficam no `localStorage`, cada computador terá sua própria conta, produtos e pedidos. Para compartilhar os mesmos dados entre pessoas, será necessário conectar um backend ou banco de dados posteriormente.
 
 ## Comandos de validação
 

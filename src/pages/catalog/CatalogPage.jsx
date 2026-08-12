@@ -3,11 +3,23 @@ import { useParams } from 'react-router-dom'
 import { getStoreBySlug } from '@/services/storeService'
 import { getActiveProducts } from '@/services/productService'
 import { getCategoriesByStore } from '@/services/categoryService'
+import { guestLogin } from '@/services/authService'
 import { CartProvider, useCart } from '@/contexts/CartContext'
 import { formatCurrency, normalizeSocialUrl } from '@/utils/formatters'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 import { ShoppingBagIcon } from '@/components/common/Icons'
 import Cart from '@/components/catalog/Cart'
+
+let publicDemoPromise = null
+
+function ensurePublicDemoCatalog() {
+  if (!publicDemoPromise) {
+    publicDemoPromise = guestLogin().finally(() => {
+      publicDemoPromise = null
+    })
+  }
+  return publicDemoPromise
+}
 
 function CatalogContent() {
   const { slug } = useParams()
@@ -26,7 +38,11 @@ function CatalogContent() {
     async function loadStore() {
       sessionStorage.removeItem('catalog_demo_destination')
       try {
-        const storeData = await getStoreBySlug(slug)
+        let storeData = await getStoreBySlug(slug)
+        if (!storeData && slug === 'loja-teste') {
+          await ensurePublicDemoCatalog()
+          storeData = await getStoreBySlug(slug)
+        }
         if (!storeData || storeData.active === false) {
           setError(storeData ? 'Catálogo temporariamente indisponível' : 'Catálogo não encontrado')
           setLoading(false)
@@ -40,7 +56,8 @@ function CatalogContent() {
         ])
         setProducts(prods)
         setCategories(cats.filter(c => c.active !== false))
-      } catch {
+      } catch (loadError) {
+        console.error('Erro ao carregar catálogo:', loadError)
         setError('Erro ao carregar catálogo')
       } finally {
         setLoading(false)

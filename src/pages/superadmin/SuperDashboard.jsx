@@ -5,6 +5,7 @@ import ConfirmDialog from '@/components/common/ConfirmDialog'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 import { formatDate } from '@/utils/formatters'
 import { PLANS } from '@/utils/constants'
+import { getCatalogPath } from '@/utils/urls'
 
 export default function SuperDashboard() {
   const toast = useToast()
@@ -111,7 +112,7 @@ export default function SuperDashboard() {
                     </div>
                   </td>
                   <td>
-                    <a href={`/${store.slug}`} target="_blank" rel="noopener noreferrer" className="text-accent">
+                    <a href={getCatalogPath(store.slug)} target="_blank" rel="noopener noreferrer" className="text-accent">
                       /{store.slug}
                     </a>
                   </td>
