@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { countProducts } from '@/services/productService'
-import { countOrders } from '@/services/orderService'
+import { countOrders, getOrdersByStore } from '@/services/orderService'
+import { getProductsByStore } from '@/services/productService'
 import { getCategoriesByStore } from '@/services/categoryService'
 import { useToast } from '@/contexts/ToastContext'
 import { copyText } from '@/utils/clipboard'
 import { getPlan } from '@/utils/constants'
 import { getCatalogUrl } from '@/utils/urls'
+import { formatCurrency } from '@/utils/formatters'
 
 export default function DashboardPage() {
   const { store } = useAuth()
@@ -15,6 +17,10 @@ export default function DashboardPage() {
     products: 0,
     categories: 0,
     orders: 0,
+    pendingOrders: 0,
+    revenue: 0,
+    averageTicket: 0,
+    topProduct: '',
   })
   const [loading, setLoading] = useState(true)
 
@@ -25,15 +31,28 @@ export default function DashboardPage() {
         return
       }
       try {
-        const [products, categories, orders] = await Promise.all([
+        const [products, categories, orders, productList] = await Promise.all([
           countProducts(store.id),
           getCategoriesByStore(store.id),
           countOrders(store.id),
+          getProductsByStore(store.id),
         ])
+        const orderList = await getOrdersByStore(store.id)
+        const validOrders = orderList.filter(order => (order.status || 'pending') !== 'cancelled')
+        const revenue = validOrders.reduce((sum, order) => sum + Number(order.total || 0), 0)
+        const itemCounts = validOrders.flatMap(order => order.items || []).reduce((acc, item) => {
+          acc[item.name] = (acc[item.name] || 0) + Number(item.quantity || 0)
+          return acc
+        }, {})
+        const topProductName = Object.entries(itemCounts).sort((a, b) => b[1] - a[1])[0]?.[0]
         setStats({
           products,
           categories: categories.length,
           orders,
+          pendingOrders: orderList.filter(order => !['delivered', 'cancelled'].includes(order.status || 'pending')).length,
+          revenue,
+          averageTicket: validOrders.length ? revenue / validOrders.length : 0,
+          topProduct: topProductName || productList[0]?.name || '—',
         })
       } catch (error) {
         console.error('Erro ao carregar estatísticas:', error)
@@ -102,6 +121,29 @@ export default function DashboardPage() {
             {store?.active ? 'Ativo' : 'Inativo'}
           </span>
           <span className="stat-card-change">Catálogo {store?.active ? 'visível' : 'oculto'}</span>
+        </div>
+      </div>
+
+      <div className="business-metrics-grid">
+        <div className="business-metric-card">
+          <span className="business-metric-label">Faturamento estimado</span>
+          <strong>{loading ? '...' : formatCurrency(stats.revenue)}</strong>
+          <small>Pedidos não cancelados</small>
+        </div>
+        <div className="business-metric-card">
+          <span className="business-metric-label">Ticket médio</span>
+          <strong>{loading ? '...' : formatCurrency(stats.averageTicket)}</strong>
+          <small>Valor médio por pedido</small>
+        </div>
+        <div className="business-metric-card">
+          <span className="business-metric-label">Aguardando atendimento</span>
+          <strong>{loading ? '...' : stats.pendingOrders}</strong>
+          <small>Pedidos em andamento</small>
+        </div>
+        <div className="business-metric-card">
+          <span className="business-metric-label">Produto em destaque</span>
+          <strong className="business-metric-product">{loading ? '...' : stats.topProduct}</strong>
+          <small>Mais procurado no histórico</small>
         </div>
       </div>
 

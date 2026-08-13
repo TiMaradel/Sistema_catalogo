@@ -35,6 +35,16 @@ export function getPlan(planId = 'free') {
   return PLANS[String(planId).toUpperCase()] || PLANS.FREE
 }
 
+/* Etapas operacionais de um pedido */
+export const ORDER_STATUSES = {
+  pending: { label: 'Novo', tone: 'warning' },
+  confirmed: { label: 'Confirmado', tone: 'info' },
+  preparing: { label: 'Em preparação', tone: 'primary' },
+  ready: { label: 'Pronto', tone: 'success' },
+  delivered: { label: 'Entregue', tone: 'success' },
+  cancelled: { label: 'Cancelado', tone: 'error' },
+}
+
 /* Roles de usuário */
 export const USER_ROLES = {
   ADMIN: 'admin',

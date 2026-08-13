@@ -45,6 +45,13 @@ O endereço utiliza uma rota compatível com o GitHub Pages e as imagens usam o 
 
 Esta publicação é adequada para demonstrar a interface. Como os dados ainda ficam no `localStorage`, cada computador terá sua própria conta, produtos e pedidos. Para compartilhar os mesmos dados entre pessoas, será necessário conectar um backend ou banco de dados posteriormente.
 
+### Recursos comerciais disponíveis
+
+- Informações de atendimento, entrega e retirada exibidas na vitrine.
+- Dashboard com faturamento estimado, ticket médio, pedidos em andamento e produto em destaque.
+- Pedidos organizados por etapas: novo, confirmado, em preparação, pronto, entregue e cancelado.
+- Filtro de pedidos por status e atualização operacional diretamente no painel.
+
 ## Comandos de validação
 
 ```bash

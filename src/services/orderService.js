@@ -22,7 +22,9 @@ export async function saveOrder(storeId, orderData) {
           id: generateLocalId(),
           storeId,
           ...orderData,
+          status: orderData.status || 'pending',
           sentAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
         }
         orders.push(newOrder)
         saveOrdersData(orders)
@@ -52,5 +54,22 @@ export async function countOrders(storeId) {
       const orders = getOrdersData()
       resolve(orders.filter(o => o.storeId === storeId).length)
     }, 150)
+  })
+}
+
+export async function updateOrderStatus(storeId, orderId, status) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      try {
+        const orders = getOrdersData()
+        const index = orders.findIndex(order => order.id === orderId && order.storeId === storeId)
+        if (index === -1) return reject(new Error('Pedido não encontrado'))
+        orders[index] = { ...orders[index], status, updatedAt: new Date().toISOString() }
+        saveOrdersData(orders)
+        resolve(orders[index])
+      } catch (error) {
+        reject(error)
+      }
+    }, 250)
   })
 }

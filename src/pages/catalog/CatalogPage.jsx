@@ -259,6 +259,13 @@ function CatalogContent() {
               {store.description && (
                 <p className="catalog-store-description">{store.description}</p>
               )}
+              {(store.businessHours || store.deliveryInfo) && (
+                <div className="catalog-business-meta">
+                  {store.businessHours && <span>Atendimento: {store.businessHours}</span>}
+                  {store.deliveryInfo && <span>{store.deliveryInfo}</span>}
+                  {store.pickupAvailable && <span>Retirada no local disponível</span>}
+                </div>
+              )}
             </div>
           </div>
 

@@ -15,6 +15,9 @@ export default function SettingsPage() {
   const [name, setName] = useState(store?.name || '')
   const [slug, setSlug] = useState(store?.slug || '')
   const [description, setDescription] = useState(store?.description || '')
+  const [businessHours, setBusinessHours] = useState(store?.businessHours || '')
+  const [deliveryInfo, setDeliveryInfo] = useState(store?.deliveryInfo || '')
+  const [pickupAvailable, setPickupAvailable] = useState(store?.pickupAvailable ?? false)
   const [whatsapp, setWhatsapp] = useState(store?.whatsapp || '')
   const [instagram, setInstagram] = useState(store?.socialLinks?.instagram || '')
   const [facebook, setFacebook] = useState(store?.socialLinks?.facebook || '')
@@ -27,6 +30,9 @@ export default function SettingsPage() {
     setName(store.name || '')
     setSlug(store.slug || '')
     setDescription(store.description || '')
+    setBusinessHours(store.businessHours || '')
+    setDeliveryInfo(store.deliveryInfo || '')
+    setPickupAvailable(store.pickupAvailable ?? false)
     setWhatsapp(store.whatsapp || '')
     setInstagram(store.socialLinks?.instagram || '')
     setFacebook(store.socialLinks?.facebook || '')
@@ -64,6 +70,9 @@ export default function SettingsPage() {
         name: name.trim(),
         slug: normalizedSlug,
         description: description.trim(),
+        businessHours: businessHours.trim(),
+        deliveryInfo: deliveryInfo.trim(),
+        pickupAvailable,
         whatsapp: whatsapp.replace(/\D/g, ''),
         logo: logoUrl,
         socialLinks: {
@@ -181,6 +190,49 @@ export default function SettingsPage() {
           />
           <p className="text-xs text-secondary">Os pedidos dos clientes serão enviados para este número</p>
         </div>
+
+        <div className="settings-section-heading">
+          <p className="settings-section-kicker">Experiência do cliente</p>
+          <h2 className="settings-section-title">Informações comerciais</h2>
+          <p className="text-sm text-secondary">Esses dados aparecem na vitrine e ajudam o cliente a decidir com segurança.</p>
+        </div>
+
+        <div className="input-group">
+          <label className="input-label" htmlFor="store-business-hours">Horário de atendimento</label>
+          <input
+            id="store-business-hours"
+            type="text"
+            className="input-field"
+            placeholder="Segunda a sábado, das 9h às 18h"
+            value={businessHours}
+            onChange={(e) => setBusinessHours(e.target.value)}
+          />
+        </div>
+
+        <div className="input-group">
+          <label className="input-label" htmlFor="store-delivery-info">Entrega e retirada</label>
+          <textarea
+            id="store-delivery-info"
+            className="input-field input-textarea"
+            placeholder="Entrega em até 2 dias úteis • Retirada combinada pelo WhatsApp"
+            value={deliveryInfo}
+            onChange={(e) => setDeliveryInfo(e.target.value)}
+            style={{ minHeight: '82px' }}
+          />
+        </div>
+
+        <label className="settings-checkbox-row" htmlFor="store-pickup">
+          <input
+            id="store-pickup"
+            type="checkbox"
+            checked={pickupAvailable}
+            onChange={(e) => setPickupAvailable(e.target.checked)}
+          />
+          <span>
+            <strong>Permitir retirada no local</strong>
+            <small>Mostra essa opção para quem estiver finalizando o pedido.</small>
+          </span>
+        </label>
 
         <div className="input-group">
           <label className="input-label" htmlFor="store-instagram">Instagram</label>

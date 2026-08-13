@@ -78,6 +78,9 @@ export function ensureDemoCatalog(ownerId) {
     slug: DEMO_SLUG,
     whatsapp: '5511999999999',
     description: 'Uma curadoria de peças leves, versáteis e feitas para acompanhar sua rotina.',
+    businessHours: 'Segunda a sábado, das 9h às 18h',
+    deliveryInfo: 'Entrega em até 2 dias úteis • Retirada combinada pelo WhatsApp',
+    pickupAvailable: true,
     layout: 'modern',
     theme: 'light',
     socialLinks: {
