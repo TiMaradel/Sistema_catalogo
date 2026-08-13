@@ -21,6 +21,8 @@ export default function SettingsPage() {
   const [whatsapp, setWhatsapp] = useState(store?.whatsapp || '')
   const [instagram, setInstagram] = useState(store?.socialLinks?.instagram || '')
   const [facebook, setFacebook] = useState(store?.socialLinks?.facebook || '')
+  const [catalogHeading, setCatalogHeading] = useState(store?.catalogHeading || '')
+  const [catalogSubheading, setCatalogSubheading] = useState(store?.catalogSubheading || '')
   const [loading, setLoading] = useState(false)
   const [logoFile, setLogoFile] = useState(null)
   const [logoPreview, setLogoPreview] = useState(store?.logo || '')
@@ -36,6 +38,8 @@ export default function SettingsPage() {
     setWhatsapp(store.whatsapp || '')
     setInstagram(store.socialLinks?.instagram || '')
     setFacebook(store.socialLinks?.facebook || '')
+    setCatalogHeading(store.catalogHeading || '')
+    setCatalogSubheading(store.catalogSubheading || '')
     setLogoPreview(store.logo || '')
   }, [store])
 
@@ -75,6 +79,8 @@ export default function SettingsPage() {
         pickupAvailable,
         whatsapp: whatsapp.replace(/\D/g, ''),
         logo: logoUrl,
+        catalogHeading: catalogHeading.trim(),
+        catalogSubheading: catalogSubheading.trim(),
         socialLinks: {
           instagram: instagram.trim(),
           facebook: facebook.trim(),
@@ -256,6 +262,38 @@ export default function SettingsPage() {
             value={facebook}
             onChange={(e) => setFacebook(e.target.value)}
           />
+        </div>
+
+        <div className="settings-section-heading">
+          <p className="settings-section-kicker">Vitrine pública</p>
+          <h2 className="settings-section-title">Textos do catálogo</h2>
+          <p className="text-sm text-secondary">Personalize os textos exibidos na página do seu catálogo.</p>
+        </div>
+
+        <div className="input-group">
+          <label className="input-label" htmlFor="catalog-heading">Título da seção de produtos</label>
+          <input
+            id="catalog-heading"
+            type="text"
+            className="input-field"
+            placeholder="Ex: Nosso cardápio, Nossa coleção..."
+            value={catalogHeading}
+            onChange={(e) => setCatalogHeading(e.target.value)}
+          />
+          <p className="text-xs text-secondary">Padrão: &quot;Nosso catálogo&quot;</p>
+        </div>
+
+        <div className="input-group">
+          <label className="input-label" htmlFor="catalog-subheading">Subtítulo da seção de produtos</label>
+          <input
+            id="catalog-subheading"
+            type="text"
+            className="input-field"
+            placeholder="Ex: Feitos com carinho para você..."
+            value={catalogSubheading}
+            onChange={(e) => setCatalogSubheading(e.target.value)}
+          />
+          <p className="text-xs text-secondary">Padrão: &quot;Confira todos os itens disponíveis&quot;</p>
         </div>
 
         <button

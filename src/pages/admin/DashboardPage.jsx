@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
-import { countProducts } from '@/services/productService'
-import { countOrders, getOrdersByStore } from '@/services/orderService'
+import { getOrdersByStore } from '@/services/orderService'
 import { getProductsByStore } from '@/services/productService'
 import { getCategoriesByStore } from '@/services/categoryService'
 import { useToast } from '@/contexts/ToastContext'
@@ -9,6 +8,34 @@ import { copyText } from '@/utils/clipboard'
 import { getPlan } from '@/utils/constants'
 import { getCatalogUrl } from '@/utils/urls'
 import { formatCurrency } from '@/utils/formatters'
+import { PlusCircleIcon } from '@/components/common/Icons'
+
+/* Agrupa pedidos por dia (últimos N dias) */
+function buildDailyChart(orders, days = 7) {
+  const result = []
+  const now = new Date()
+
+  for (let i = days - 1; i >= 0; i--) {
+    const date = new Date(now)
+    date.setDate(now.getDate() - i)
+    const key = date.toISOString().slice(0, 10) // YYYY-MM-DD
+
+    const count = orders.filter(o => {
+      const created = o.createdAt?.seconds
+        ? new Date(o.createdAt.seconds * 1000)
+        : o.createdAt ? new Date(o.createdAt) : null
+      return created && created.toISOString().slice(0, 10) === key
+    }).length
+
+    const label = date.toLocaleDateString('pt-BR', { weekday: 'short' })
+      .replace('.', '')
+      .slice(0, 3)
+
+    result.push({ key, label, count })
+  }
+
+  return result
+}
 
 export default function DashboardPage() {
   const { store } = useAuth()
@@ -22,6 +49,7 @@ export default function DashboardPage() {
     averageTicket: 0,
     topProduct: '',
   })
+  const [chartData, setChartData] = useState([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -31,29 +59,38 @@ export default function DashboardPage() {
         return
       }
       try {
-        const [products, categories, orders, productList] = await Promise.all([
-          countProducts(store.id),
+        /* Uma única chamada para pedidos — derivamos a contagem dos dados */
+        const [categories, productList, orderList] = await Promise.all([
           getCategoriesByStore(store.id),
-          countOrders(store.id),
           getProductsByStore(store.id),
+          getOrdersByStore(store.id),
         ])
-        const orderList = await getOrdersByStore(store.id)
-        const validOrders = orderList.filter(order => (order.status || 'pending') !== 'cancelled')
-        const revenue = validOrders.reduce((sum, order) => sum + Number(order.total || 0), 0)
-        const itemCounts = validOrders.flatMap(order => order.items || []).reduce((acc, item) => {
-          acc[item.name] = (acc[item.name] || 0) + Number(item.quantity || 0)
-          return acc
-        }, {})
+
+        const validOrders = orderList.filter(o => (o.status || 'pending') !== 'cancelled')
+        const revenue = validOrders.reduce((sum, o) => sum + Number(o.total || 0), 0)
+
+        const itemCounts = validOrders
+          .flatMap(o => o.items || [])
+          .reduce((acc, item) => {
+            acc[item.name] = (acc[item.name] || 0) + Number(item.quantity || 0)
+            return acc
+          }, {})
+
         const topProductName = Object.entries(itemCounts).sort((a, b) => b[1] - a[1])[0]?.[0]
+
         setStats({
-          products,
+          products: productList.length,
           categories: categories.length,
-          orders,
-          pendingOrders: orderList.filter(order => !['delivered', 'cancelled'].includes(order.status || 'pending')).length,
+          orders: orderList.length,
+          pendingOrders: orderList.filter(
+            o => !['delivered', 'cancelled'].includes(o.status || 'pending')
+          ).length,
           revenue,
           averageTicket: validOrders.length ? revenue / validOrders.length : 0,
           topProduct: topProductName || productList[0]?.name || '—',
         })
+
+        setChartData(buildDailyChart(orderList, 7))
       } catch (error) {
         console.error('Erro ao carregar estatísticas:', error)
       } finally {
@@ -65,6 +102,7 @@ export default function DashboardPage() {
 
   const catalogUrl = store?.slug ? getCatalogUrl(store.slug) : ''
   const plan = getPlan(store?.plan)
+  const chartMax = Math.max(...chartData.map(d => d.count), 1)
 
   return (
     <div>
@@ -117,7 +155,10 @@ export default function DashboardPage() {
         </div>
         <div className="stat-card">
           <span className="stat-card-label">Status</span>
-          <span className="stat-card-value" style={{ fontSize: '1.5rem', color: store?.active ? 'var(--color-success)' : 'var(--color-error)' }}>
+          <span
+            className="stat-card-value"
+            style={{ fontSize: '1.5rem', color: store?.active ? 'var(--color-success)' : 'var(--color-error)' }}
+          >
             {store?.active ? 'Ativo' : 'Inativo'}
           </span>
           <span className="stat-card-change">Catálogo {store?.active ? 'visível' : 'oculto'}</span>
@@ -143,14 +184,38 @@ export default function DashboardPage() {
         <div className="business-metric-card">
           <span className="business-metric-label">Produto em destaque</span>
           <strong className="business-metric-product">{loading ? '...' : stats.topProduct}</strong>
-          <small>Mais procurado no histórico</small>
+          <small>Mais pedido no histórico</small>
         </div>
       </div>
 
-      {/* Dicas rápidas */}
+      {/* Gráfico de pedidos — últimos 7 dias */}
+      {!loading && chartData.length > 0 && (
+        <div className="card card-elevated mt-6">
+          <div className="card-body">
+            <p className="mini-chart-title">Pedidos — últimos 7 dias</p>
+            <div className="mini-chart">
+              {chartData.map(day => (
+                <div key={day.key} className="mini-chart-col">
+                  <span className="mini-chart-count">{day.count > 0 ? day.count : ''}</span>
+                  <div
+                    className="mini-chart-bar"
+                    style={{ height: `${Math.max((day.count / chartMax) * 100, day.count > 0 ? 8 : 3)}%` }}
+                    title={`${day.label}: ${day.count} pedido${day.count !== 1 ? 's' : ''}`}
+                  />
+                  <span className="mini-chart-label">{day.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Empty state quando não há produtos */}
       {stats.products === 0 && !loading && (
         <div className="empty-state mt-8">
-          <div className="empty-state-icon">+</div>
+          <div className="empty-state-icon">
+            <PlusCircleIcon size={32} />
+          </div>
           <h3 className="empty-state-title">Comece agora!</h3>
           <p className="empty-state-text">
             Seu catálogo está criado. Adicione seus primeiros produtos para que seus clientes possam vê-los.

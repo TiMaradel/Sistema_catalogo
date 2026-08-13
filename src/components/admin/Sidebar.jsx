@@ -1,27 +1,38 @@
 import { NavLink } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
 import { getCatalogPath } from '@/utils/urls'
+import {
+  DashboardIcon,
+  ProductsIcon,
+  CategoriesIcon,
+  OrdersIcon,
+  AppearanceIcon,
+  SettingsIcon,
+  ExternalLinkIcon,
+  SuperAdminIcon,
+  StoresIcon,
+} from '@/components/common/Icons'
 
 export default function Sidebar({ isOpen, onClose }) {
   const { store, isSuperAdmin } = useAuth()
 
   const adminLinks = [
-    { to: '/admin', icon: '01', label: 'Visão geral', end: true },
-    { to: '/admin/products', icon: '02', label: 'Produtos' },
-    { to: '/admin/categories', icon: '03', label: 'Categorias' },
-    { to: '/admin/orders', icon: '04', label: 'Pedidos' },
-    { to: '/admin/layout', icon: '05', label: 'Aparência' },
-    { to: '/admin/settings', icon: '06', label: 'Configurações' },
+    { to: '/admin', icon: <DashboardIcon />, label: 'Visão geral', end: true },
+    { to: '/admin/products', icon: <ProductsIcon />, label: 'Produtos' },
+    { to: '/admin/categories', icon: <CategoriesIcon />, label: 'Categorias' },
+    { to: '/admin/orders', icon: <OrdersIcon />, label: 'Pedidos' },
+    { to: '/admin/layout', icon: <AppearanceIcon />, label: 'Aparência' },
+    { to: '/admin/settings', icon: <SettingsIcon />, label: 'Configurações' },
   ]
 
   const superAdminLinks = [
-    { to: '/super', icon: 'M', label: 'Painel Master', end: true },
-    { to: '/super/stores', icon: 'L', label: 'Gerenciar lojas' },
+    { to: '/super', icon: <SuperAdminIcon />, label: 'Painel Master', end: true },
+    { to: '/super/stores', icon: <StoresIcon />, label: 'Gerenciar lojas' },
   ]
 
   return (
     <>
-      <div className={`mobile-overlay ${isOpen ? 'visible' : ''}`} onClick={onClose}></div>
+      <div className={`mobile-overlay ${isOpen ? 'visible' : ''}`} onClick={onClose} />
       <aside className={`admin-sidebar ${isOpen ? 'open' : ''}`}>
         <div className="sidebar-logo">
           <div className="sidebar-logo-icon">C</div>
@@ -71,9 +82,11 @@ export default function Sidebar({ isOpen, onClose }) {
               target="_blank"
               rel="noopener noreferrer"
               className="sidebar-link"
-              style={{ color: '#FF6B00' }}
+              style={{ color: 'var(--color-primary-light)' }}
             >
-              <span className="sidebar-link-icon">↗</span>
+              <span className="sidebar-link-icon">
+                <ExternalLinkIcon />
+              </span>
               Ver catálogo público
             </a>
           )}
